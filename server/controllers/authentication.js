@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import User from '../models/user';
+//import User from '../models/user';
 import { setUserInfo, getRole } from '../services/helpers';
 import config from '../config';
-
+//var User = require('../models/user');
 // Generate JWT
 // TO-DO Add issuer and audience
 function generateToken(user) {
@@ -28,7 +28,9 @@ exports.login = function (req, res, next) {
 //= =======================================
 // Registration Route
 //= =======================================
-exports.register = function (req, res, next) {
+exports.register =  async  (req, res, next) => {
+
+  console.log('hhhhh')
   // Check for registration errors
   const email = req.body.email;
   const firstName = req.body.firstName;
@@ -49,8 +51,38 @@ exports.register = function (req, res, next) {
   if (!password) {
     return res.status(422).send({ error: 'You must enter a password.' });
   }
+  try {
+    let user = await database.User.findOne({ where:{ email }})
+    console.log('user', user);
+    if(user){
+      return res.status(422).send({ error: 'That email address is already in use.' });
+    }
+    else{
+      const userData = {
+        email,
+        password,
+        firstName, 
+        lastName 
+      };
+    
+      user = await database.User.create(userData);
+      user = JSON.parse(JSON.stringify(user))
+      console.log(user);
+      const userInfo = setUserInfo(user);
 
-  User.findOne({ email }, (err, existingUser) => {
+      res.status(201).json({
+        token: `JWT ${generateToken(userInfo)}`,
+        user: userInfo
+      });
+  
+    }
+  }
+  catch(e){
+    console.log(e)
+    return res.status(500).send({ error: 'Server Error' });
+  }
+  /*, (err, existingUser) => {
+    console.log(err,  existingUser);
     if (err) { return next(err); }
 
       // If user is not unique, return error
@@ -62,10 +94,11 @@ exports.register = function (req, res, next) {
     const user = new User({
       email,
       password,
-      profile: { firstName, lastName }
+      firstName, 
+      lastName 
     });
-
-    user.save((err, user) => {
+    consol.log(user)
+    user.create((err, user) => {
       if (err) { return next(err); }
 
         // Subscribe member to Mailchimp list
@@ -79,8 +112,8 @@ exports.register = function (req, res, next) {
         token: `JWT ${generateToken(userInfo)}`,
         user: userInfo
       });
-    });
-  });
+    });*/
+  //};
 };
 
 //= =======================================

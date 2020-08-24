@@ -4,8 +4,8 @@ import { ROLE_MEMBER, ROLE_CLIENT, ROLE_OWNER, ROLE_ADMIN } from '../constants';
 export function setUserInfo(request) {
   const getUserInfo = {
     _id: request._id,
-    firstName: request.profile.firstName,
-    lastName: request.profile.lastName,
+    firstName: request.firstName,
+    lastName: request.lastName,
     email: request.email,
     role: request.role
   };

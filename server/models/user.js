@@ -1,44 +1,65 @@
-import mongoose from 'mongoose';
+const Sequelize = require('sequelize');
+var config = require('../config');
+var SchemaName = config.connect_db_name;
 import bcrypt from 'bcrypt-nodejs';
-import { ROLE_MEMBER, ROLE_CLIENT, ROLE_OWNER, ROLE_ADMIN } from '../constants';
 
-const Schema = mongoose.Schema;
+module.exports = function (sequelize, DataTypes) {
+  var User = sequelize.define('users', {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      field: 'id',
+      autoIncrement: true,
+    },
+    firstName: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: 'first_name'
+    },
+    lastName: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: 'last_name'
+    },
+    email: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: 'email'
+    },
+    password: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+          field: 'password'
+    },
+    status: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: 'status'
+    },
+    is_deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: '0',
+      get() {
+            if (this.getDataValue('is_deleted') == undefined) {
+                  return;
+            }
+            return this.getDataValue('is_deleted') ? true : false;
+      } 
+    },
+    createdAt: { type: DataTypes.DATEONLY, allowNull: true, defaultValue: sequelize.literal('CURRENT_TIMESTAMP') },
+    updatedAt: { type: DataTypes.DATEONLY, allowNull: true, defaultValue: sequelize.literal('CURRENT_TIMESTAMP') },
+    deletedAt: { type: DataTypes.DATEONLY, allowNull: true },
+  });
 
-//= ===============================
-// User Schema
-//= ===============================
-const UserSchema = new Schema({
-  email: {
-    type: String,
-    lowercase: true,
-    unique: true,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  profile: {
-    firstName: { type: String },
-    lastName: { type: String }
-  },
-  role: {
-    type: String,
-    enum: [ROLE_MEMBER, ROLE_CLIENT, ROLE_OWNER, ROLE_ADMIN],
-    default: ROLE_MEMBER
-  },
-  resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Date }
-},
-{
-  timestamps: true
-});
+  return User;
+}
 
-//= ===============================
-// User ORM Methods
-//= ===============================
 
-// Pre-save of user to database, hash password if password is modified or new
+
+
+/*// Pre-save of user to database, hash password if password is modified or new
 UserSchema.pre('save', function (next) {
   const user = this,
     SALT_FACTOR = 5;
@@ -64,5 +85,5 @@ UserSchema.methods.comparePassword = function (candidatePassword, cb) {
     cb(null, isMatch);
   });
 };
-
-module.exports = mongoose.model('User', UserSchema);
+*/
+//module.exports = mongoose.model('User', UserSchema);
