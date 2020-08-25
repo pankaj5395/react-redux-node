@@ -29,8 +29,6 @@ exports.login = function (req, res, next) {
 // Registration Route
 //= =======================================
 exports.register =  async  (req, res, next) => {
-
-  console.log('hhhhh')
   // Check for registration errors
   const email = req.body.email;
   const firstName = req.body.firstName;
@@ -53,7 +51,7 @@ exports.register =  async  (req, res, next) => {
   }
   try {
     let user = await database.User.findOne({ where:{ email }})
-    console.log('user', user);
+    //console.log('user', user);
     if(user){
       return res.status(422).send({ error: 'That email address is already in use.' });
     }
