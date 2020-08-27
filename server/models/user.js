@@ -37,6 +37,11 @@ module.exports = function (sequelize, DataTypes) {
           allowNull: true,
           field: 'status'
     },
+    role: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          field: 'role'
+    },
     is_deleted: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -55,18 +60,12 @@ module.exports = function (sequelize, DataTypes) {
 
   User.beforeCreate( async (user, options) => {
     const SALT_FACTOR = 5;
-    console.log('herer');
     const salt = bcrypt.genSaltSync();
     user.password = bcrypt.hashSync(user.password, salt);
   });
 
   User.comparePassword = async (candidatePassword, hash) =>{
-    return bcrypt.compare(candidatePassword, hash, (err, isMatch) => {
-      if(err)
-        return false
-
-      return isMatch;
-    });
+    return await bcrypt.compareSync(candidatePassword, hash);
   };
   return User;
 }

@@ -41,5 +41,6 @@ const database = {
     //User: sequelizer.import('../models/user', require('../models/user')),
 }
 database.User = require("../models/user")(sequelizer, Sequelize);
+database.Role = require("../models/role")(sequelizer, Sequelize);
 
 module.exports = database;

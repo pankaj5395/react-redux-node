@@ -8,7 +8,7 @@ import config from '../config';
 // TO-DO Add issuer and audience
 function generateToken(user) {
   return jwt.sign(user, config.secret, {
-    expiresIn: 604800 // in seconds
+    expiresIn: 60810 // in seconds
   });
 }
 
@@ -60,7 +60,8 @@ exports.register =  async  (req, res, next) => {
         email,
         password,
         firstName, 
-        lastName 
+        lastName,
+        role
       };
     
       user = await database.User.create(userData);
@@ -79,40 +80,30 @@ exports.register =  async  (req, res, next) => {
     console.log(e)
     return res.status(500).send({ error: 'Server Error' });
   }
-  /*, (err, existingUser) => {
-    console.log(err,  existingUser);
-    if (err) { return next(err); }
-
-      // If user is not unique, return error
-    if (existingUser) {
-      return res.status(422).send({ error: 'That email address is already in use.' });
-    }
-
-      // If email is unique and password was provided, create account
-    const user = new User({
-      email,
-      password,
-      firstName, 
-      lastName 
-    });
-    consol.log(user)
-    user.create((err, user) => {
-      if (err) { return next(err); }
-
-        // Subscribe member to Mailchimp list
-        // mailchimp.subscribeToNewsletter(user.email);
-
-        // Respond with JWT if user was created
-
-      const userInfo = setUserInfo(user);
-
-      res.status(201).json({
-        token: `JWT ${generateToken(userInfo)}`,
-        user: userInfo
-      });
-    });*/
-  //};
 };
+
+exports.refreshToken = (req, res, next) => {
+
+  const { token } = req.body;
+
+    if (!token) {
+        return res.sendStatus(401);
+    }
+    console.log(token);
+    jwt.verify(token, config.secret, (err, user) => {
+      console.log(err)
+        if (err) {
+            return res.sendStatus(403);
+        }
+
+        const accessToken = `JWT ${generateToken(user)}`;
+
+        res.json({
+            accessToken
+        });
+    });
+
+}
 
 //= =======================================
 // Authorization Middleware
@@ -120,21 +111,22 @@ exports.register =  async  (req, res, next) => {
 
 // Role authorization check
 exports.roleAuthorization = function (requiredRole) {
-  return function (req, res, next) {
+  return async function (req, res, next) {
     const user = req.user;
-
-    User.findById(user._id, (err, foundUser) => {
-      if (err) {
-        res.status(422).json({ error: 'No user was found.' });
-        return next(err);
+    console.log('i  callled')
+    const foundUser = await database.User.findOne({where:{id:user.id}}) //, (err, foundUser) => {
+      if (!foundUser) {
+        return res.status(422).json({ error: 'No user was found.' });
+        //return next();
       }
-
       // If user is found, check role.
-      if (getRole(foundUser.role) >= getRole(requiredRole)) {
+      console.log(foundUser.role, await getRole(foundUser.role))
+      console.log(requiredRole, await getRole(requiredRole))
+      if (await getRole(foundUser.role) == await getRole(requiredRole)) {
         return next();
       }
 
       return res.status(401).json({ error: 'You are not authorized to view this content.' });
-    });
+    //});
   };
 };

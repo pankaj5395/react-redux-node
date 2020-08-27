@@ -13,16 +13,13 @@ export function setUserInfo(request) {
   return getUserInfo;
 };
 
-export function getRole(checkRole) {
-  let role;
+export async function getRole(id) {
 
-  switch (checkRole) {
-    case ROLE_ADMIN: role = 4; break;
-    case ROLE_OWNER: role = 3; break;
-    case ROLE_CLIENT: role = 2; break;
-    case ROLE_MEMBER: role = 1; break;
-    default: role = 1;
-  }
+  let role = await database.Role.findOne({where:{id: id}});
 
-  return role;
+  if(!role)
+    return false;
+
+  return id;
+  
 };
