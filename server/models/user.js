@@ -57,7 +57,7 @@ module.exports = function (sequelize, DataTypes) {
     updatedAt: { type: DataTypes.DATEONLY, allowNull: true, defaultValue: sequelize.literal('CURRENT_TIMESTAMP') },
     deletedAt: { type: DataTypes.DATEONLY, allowNull: true },
   });
-
+  
   User.beforeCreate( async (user, options) => {
     const SALT_FACTOR = 5;
     const salt = bcrypt.genSaltSync();

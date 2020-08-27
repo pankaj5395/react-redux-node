@@ -1,7 +1,9 @@
 var Sequelize = require('sequelize');
 var config = require('../config')
-
-
+import User from  "../models/user";
+import path from 'path';
+import fs from 'fs';
+import Utils from './utils';
 var ConnectionPool = {
       max: 3,
       min: 1,
@@ -34,13 +36,20 @@ sequelizer.authenticate()
     console.log('connected to DB');
   });
 
+let models={};
+const files = fs.readdirSync(__dirname + '/../models');
+for(let file of files){
+	if (file !== path.basename(__filename) && file.endsWith('.js')) {
+        const model = require(
+            path.join(__dirname +'/../models/' , file.replace(/\.js$/, ''))
+        )(sequelizer, Sequelize);
+        models[Utils.functionName(file.split('.')[0])] = model;
+    }
+}
 
 const database = {
 	Sequelize: Sequelize,
     sequelizer: sequelizer,
-    //User: sequelizer.import('../models/user', require('../models/user')),
+    ...models
 }
-database.User = require("../models/user")(sequelizer, Sequelize);
-database.Role = require("../models/role")(sequelizer, Sequelize);
-
 module.exports = database;

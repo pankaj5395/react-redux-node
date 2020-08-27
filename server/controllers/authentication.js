@@ -3,6 +3,7 @@ import crypto from 'crypto';
 //import User from '../models/user';
 import { setUserInfo, getRole } from '../services/helpers';
 import config from '../config';
+import User from '../models/user';
 //var User = require('../models/user');
 // Generate JWT
 // TO-DO Add issuer and audience
@@ -34,6 +35,7 @@ exports.register =  async  (req, res, next) => {
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const password = req.body.password;
+  const role = req.body.role;
 
   // Return error if no email provided
   if (!email) {
@@ -50,8 +52,9 @@ exports.register =  async  (req, res, next) => {
     return res.status(422).send({ error: 'You must enter a password.' });
   }
   try {
+    //let User = new database.User();
     let user = await database.User.findOne({ where:{ email }})
-    //console.log('user', user);
+    console.log('user', user);
     if(user){
       return res.status(422).send({ error: 'That email address is already in use.' });
     }
@@ -63,8 +66,8 @@ exports.register =  async  (req, res, next) => {
         lastName,
         role
       };
-    
-      user = await database.User.create(userData);
+        console.log(userData);
+      user = await User.create(userData);
       user = JSON.parse(JSON.stringify(user))
       console.log(user);
       const userInfo = setUserInfo(user);
