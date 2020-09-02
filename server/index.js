@@ -5,7 +5,11 @@ import router from './router';
 import config from './config';
 import session from 'express-session';
 
+import Queue from './component/queue';
+
 global.database = require("./lib/database");
+
+global.queue = new Queue();
 var cors = require('cors')
 
 const app = express();
@@ -19,7 +23,7 @@ app.use(bodyParser.json()); // Send JSON responses
 app.use(logger('dev')); // Log requests to API using morgan
 
 
-// Enable CORS from client-side
+// Enable CORS from client-side 
 app.use(cors());
 
 
