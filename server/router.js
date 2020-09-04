@@ -6,6 +6,7 @@ import AuthenticationController from './controllers/authentication';
 import UserController from './controllers/user';
 
 import QueueController from './controllers/queue';
+import RpcController from './controllers/rpc';
 
 import {passportService, refreshToken} from './services/passport';
 
@@ -27,7 +28,7 @@ export default function (app) {
   .forEach((file) => {
     let className = require(`./modules/user/routes/${file}`);
     let obj = new className.default();
-    getRoutes(obj);
+    getRoutes(obj); 
     console.log(obj);
   });
 
@@ -54,9 +55,11 @@ export default function (app) {
   apiRoutes.use('/user', userRoutes);
   userRoutes.get('/:userId', requireAuth, UserController.viewProfile);
 
-  
+
   apiRoutes.get('/set-queue', QueueController.setQueue);
   apiRoutes.get('/get-queue', QueueController.getQueue);
+
+  apiRoutes.get('/get-rpc', RpcController.testRpc);
 
 
   apiRoutes.get('/user-only', requireAuth, AuthenticationController.roleAuthorization(2), (req, res) => {

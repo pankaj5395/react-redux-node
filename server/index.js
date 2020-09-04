@@ -6,10 +6,14 @@ import config from './config';
 import session from 'express-session';
 
 import Queue from './component/queue';
+import RPC from './component/rpc';
 
 global.database = require("./lib/database");
 
 global.queue = new Queue();
+global.RPC  = new RPC();
+//global.RPC = client;
+
 var cors = require('cors')
 
 const app = express();
