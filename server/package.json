@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -e js --exec \"babel-node index.js --experimental-json-modules\""
+    "start": "nodemon -e js --exec \"babel-node index.js\"",
+    "eslint": "node_modules/.bin/eslint *.js"
   },
   "dependencies": {
     "amqplib": "^0.6.0",
@@ -43,6 +44,9 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-node-externals": "^2.5.2"
   }
 }
